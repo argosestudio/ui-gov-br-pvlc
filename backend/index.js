@@ -54,32 +54,82 @@ async function initializeStorage() {
 /**
  * POST /api/files
  * Upload a file to storage
+ * Supports both:
+ * - FormData with multipart/form-data (legacy)
+ * - JSON with base64 encoded content (new)
  */
-app.post('/api/files', upload.single('file'), async (req, res) => {
+app.post('/api/files', async (req, res) => {
     try {
         if (!storage) {
             return res.status(503).json({ error: 'Storage não disponível. Inicie o MinIO.' })
         }
 
-        if (!req.file) {
-            return res.status(400).json({ error: 'Nenhum arquivo enviado' })
+        // Check if this is a JSON request with base64 content
+        if (req.is('application/json') && req.body.content) {
+            const { fileName, mimeType, category, size, content } = req.body
+
+            if (!fileName || !content || !category) {
+                return res.status(400).json({
+                    error: 'Campos obrigatórios: fileName, content (base64), category'
+                })
+            }
+
+            // Validate mime type
+            const allowedTypes = [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+                'image/gif',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ]
+            if (!allowedTypes.includes(mimeType)) {
+                return res.status(400).json({ error: 'Tipo de arquivo não permitido' })
+            }
+
+            // Convert base64 to buffer
+            const fileBuffer = Buffer.from(content, 'base64')
+
+            // Upload to storage
+            const result = await storage.uploadFile(
+                fileBuffer,
+                fileName,
+                category,
+                mimeType
+            )
+
+            return res.status(201).json({
+                success: true,
+                data: result
+            })
         }
 
-        const { category } = req.body
-        if (!category) {
-            return res.status(400).json({ error: 'Categoria é obrigatória' })
-        }
+        // Legacy: Handle FormData with multer
+        upload.single('file')(req, res, async (err) => {
+            if (err) {
+                return res.status(400).json({ error: err.message })
+            }
 
-        const result = await storage.uploadFile(
-            req.file.buffer,
-            req.file.originalname,
-            category,
-            req.file.mimetype
-        )
+            if (!req.file) {
+                return res.status(400).json({ error: 'Nenhum arquivo enviado' })
+            }
 
-        res.status(201).json({
-            success: true,
-            data: result
+            const { category } = req.body
+            if (!category) {
+                return res.status(400).json({ error: 'Categoria é obrigatória' })
+            }
+
+            const result = await storage.uploadFile(
+                req.file.buffer,
+                req.file.originalname,
+                category,
+                req.file.mimetype
+            )
+
+            res.status(201).json({
+                success: true,
+                data: result
+            })
         })
     } catch (error) {
         console.error('Error uploading file:', error)

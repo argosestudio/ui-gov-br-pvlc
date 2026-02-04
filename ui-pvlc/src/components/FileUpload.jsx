@@ -15,14 +15,38 @@ function FileUpload({ id, onFilesChange, initialFiles = [] }) {
         }
     }, [initialFiles])
 
+    // Convert file to base64
+    const fileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(file)
+            reader.onload = () => {
+                // Remove the data:mime;base64, prefix
+                const base64String = reader.result.split(',')[1]
+                resolve(base64String)
+            }
+            reader.onerror = (error) => reject(error)
+        })
+    }
+
+    // Upload file as base64 via JSON API
     const uploadToServer = async (file) => {
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('category', id)
+        const base64Content = await fileToBase64(file)
+
+        const payload = {
+            fileName: file.name,
+            mimeType: file.type,
+            category: id,
+            size: file.size,
+            content: base64Content // base64 encoded file content
+        }
 
         const response = await fetch(`${API_URL}/files`, {
             method: 'POST',
-            body: formData
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
         })
 
         if (!response.ok) {
@@ -47,6 +71,12 @@ function FileUpload({ id, onFilesChange, initialFiles = [] }) {
     const addFiles = async (newFiles) => {
         const validFiles = Array.from(newFiles).filter(file => {
             const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+            // Check file size (max 10MB)
+            const maxSize = 10 * 1024 * 1024
+            if (file.size > maxSize) {
+                alert(`Arquivo ${file.name} excede o tamanho máximo de 10MB`)
+                return false
+            }
             return validTypes.includes(file.type) || file.type.startsWith('image/')
         })
 

@@ -600,3 +600,404 @@ body {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
 }
+
+/* ========================================
+   TIMELINE COMPONENT
+   ======================================== */
+
+.timeline-container {
+  background: linear-gradient(135deg, var(--blue-warm-vivid-70, #1351b4) 0%, var(--blue-warm-vivid-80, #0c326f) 100%);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.timeline-header h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: white;
+}
+
+.timeline-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 100px;
+  position: relative;
+}
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  position: relative;
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.timeline-step.completed .step-circle {
+  background: var(--green-cool-vivid-50, #168821);
+  color: white;
+  border-color: var(--green-cool-vivid-50, #168821);
+}
+
+.timeline-step.current .step-circle {
+  background: white;
+  color: var(--blue-warm-vivid-70, #1351b4);
+  border-color: white;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+  transform: scale(1.15);
+}
+
+.step-line {
+  position: absolute;
+  left: 50%;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.timeline-step.completed .step-line {
+  background: var(--green-cool-vivid-50, #168821);
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+.step-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 90px;
+  line-height: 1.3;
+}
+
+.timeline-step.current .step-label {
+  color: white;
+  font-weight: 600;
+}
+
+.step-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 0.6rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  margin-top: 0.35rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================
+   PROJECT INFO SECTION
+   ======================================== */
+
+.projeto-info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.projeto-info-item {
+  background: var(--gray-2, #f8f8f8);
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  border-left: 4px solid var(--blue-warm-vivid-70, #1351b4);
+}
+
+.projeto-info-item label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--blue-warm-vivid-70, #1351b4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.projeto-info-item p {
+  font-size: 1rem;
+  color: var(--gray-80, #333333);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.projeto-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .projeto-info-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.projeto-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.projeto-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: var(--blue-warm-vivid-70, #1351b4);
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: background 0.2s ease;
+}
+
+.projeto-link:hover {
+  background: var(--blue-warm-vivid-80, #0c326f);
+  color: white;
+}
+
+.projeto-link i {
+  margin-right: 0.5rem;
+}
+
+/* ========================================
+   RESPONSIVE TIMELINE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .timeline-steps {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timeline-step {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    min-width: auto;
+    margin-bottom: 0.75rem;
+  }
+
+  .step-indicator {
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .step-line {
+    display: none;
+  }
+
+  .step-content {
+    margin-top: 0;
+    margin-left: 0.75rem;
+    align-items: flex-start;
+    text-align: left;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .step-label {
+    max-width: none;
+  }
+
+  .step-badge {
+    margin-top: 0;
+  }
+}
+
+/* ========================================
+   BR-STEP (GovBR Design System)
+   ======================================== */
+
+.br-step {
+  background: linear-gradient(135deg, var(--blue-warm-vivid-70, #1351b4) 0%, var(--blue-warm-vivid-80, #0c326f) 100%);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.br-step .step-progress {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.br-step .step-progress-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex: 1;
+  min-width: 80px;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.br-step .step-progress-btn:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.br-step .step-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.br-step .step-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.br-step .step-progress-btn.active .step-icon {
+  background: white;
+  color: var(--blue-warm-vivid-70, #1351b4);
+  border-color: white;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+  transform: scale(1.15);
+}
+
+.br-step .step-progress-btn:not(:disabled):not(.active) .step-icon {
+  background: var(--green-cool-vivid-50, #168821);
+  color: white;
+  border-color: var(--green-cool-vivid-50, #168821);
+}
+
+.br-step .step-number {
+  font-weight: 600;
+}
+
+.br-step .step-label {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  max-width: 80px;
+  line-height: 1.3;
+}
+
+.br-step .step-progress-btn.active .step-label {
+  color: white;
+  font-weight: 600;
+}
+
+.br-step .step-current-tag {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 0.55rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ========================================
+   PAGE HEADER (Title + Back Button)
+   ======================================== */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  flex: 1;
+}
+
+.page-header .br-button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 576px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-header .br-button {
+    align-self: flex-start;
+  }
+}
+
+/* ========================================
+   BR-STEP RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .br-step .step-progress {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .br-step .step-progress-btn {
+    flex-direction: row;
+    min-width: auto;
+    justify-content: flex-start;
+  }
+
+  .br-step .step-info {
+    flex-direction: row;
+    gap: 0.75rem;
+  }
+
+  .br-step .step-label {
+    max-width: none;
+    text-align: left;
+  }
+}
