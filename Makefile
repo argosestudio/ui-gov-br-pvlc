@@ -23,7 +23,7 @@ install: install-ui install-backend
 
 install-ui:
 	@echo "📦 Instalando dependências do frontend..."
-	cd ui-pvlc && npm install
+	cd ui && npm install
 
 install-backend:
 	@echo "📦 Instalando dependências do backend..."
@@ -32,7 +32,7 @@ install-backend:
 # Development - Individual services
 dev-ui:
 	@echo "🚀 Iniciando frontend..."
-	cd ui-pvlc && npm run dev
+	cd ui && npm run dev
 
 dev-backend:
 	@echo "🚀 Iniciando backend..."
@@ -59,12 +59,12 @@ all: docker-up
 	@echo "Iniciando backend em background..."
 	@cd backend && npm run dev &
 	@echo "Iniciando frontend..."
-	cd ui-pvlc && npm run dev
+	cd ui && npm run dev
 
 # Cleanup
 clean:
 	@echo "🧹 Limpando projeto..."
-	rm -rf ui-pvlc/node_modules
+	rm -rf ui/node_modules
 	rm -rf backend/node_modules
 	docker-compose down -v
 	@echo "✅ Limpeza concluída"

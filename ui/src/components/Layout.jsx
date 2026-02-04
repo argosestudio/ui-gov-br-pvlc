@@ -1,15 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 
-// Timeline steps (will be dynamic from API in the future)
-const timelineSteps = [
-    { id: 1, label: 'Aprovação do CONFIEX', completed: true },
-    { id: 2, label: 'Negociação do contrato', completed: true },
-    { id: 3, label: 'Análise do PVL', current: true },
-    { id: 4, label: 'Análise da CAPAG', completed: false },
-    { id: 5, label: 'Análise no Senado', completed: false },
-    { id: 6, label: 'Assinatura do contrato', completed: false }
-]
-
 function Layout({ children }) {
     return (
         <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
@@ -59,38 +49,9 @@ function Layout({ children }) {
     )
 }
 
-// Timeline component using GovBR br-step pattern
-function Timeline() {
-    return (
-        <div className="br-step" data-type="simple" data-label="top">
-            <div className="step-progress">
-                {timelineSteps.map((step, index) => (
-                    <button
-                        key={step.id}
-                        className={`step-progress-btn ${step.completed ? '' : ''} ${step.current ? 'active' : ''}`}
-                        type="button"
-                        disabled={!step.completed && !step.current}
-                        aria-current={step.current ? 'step' : undefined}
-                    >
-                        <span className="step-info">
-                            <span className="step-icon">
-                                {step.completed ? (
-                                    <i className="fas fa-check" aria-hidden="true"></i>
-                                ) : (
-                                    <span className="step-number">{step.id}</span>
-                                )}
-                            </span>
-                            <span className="step-label">{step.label}</span>
-                            {step.current && <span className="step-current-tag">Etapa Atual</span>}
-                        </span>
-                    </button>
-                ))}
-            </div>
-        </div>
-    )
-}
-
-// Back button component to be used at top and bottom
+/**
+ * Back button component - Botão de voltar reutilizável
+ */
 function BackButton({ toMenu = false }) {
     const navigate = useNavigate()
 
@@ -113,4 +74,4 @@ function BackButton({ toMenu = false }) {
     )
 }
 
-export { Layout, Timeline, BackButton, timelineSteps }
+export { Layout, BackButton }

@@ -842,107 +842,6 @@ body {
 }
 
 /* ========================================
-   BR-STEP (GovBR Design System)
-   ======================================== */
-
-.br-step {
-  background: linear-gradient(135deg, var(--blue-warm-vivid-70, #1351b4) 0%, var(--blue-warm-vivid-80, #0c326f) 100%);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.br-step .step-progress {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.25rem;
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-}
-
-.br-step .step-progress-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  flex: 1;
-  min-width: 80px;
-  padding: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.br-step .step-progress-btn:disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-
-.br-step .step-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.br-step .step-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.7);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  font-weight: 600;
-  font-size: 0.875rem;
-  transition: all 0.3s ease;
-}
-
-.br-step .step-progress-btn.active .step-icon {
-  background: white;
-  color: var(--blue-warm-vivid-70, #1351b4);
-  border-color: white;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
-  transform: scale(1.15);
-}
-
-.br-step .step-progress-btn:not(:disabled):not(.active) .step-icon {
-  background: var(--green-cool-vivid-50, #168821);
-  color: white;
-  border-color: var(--green-cool-vivid-50, #168821);
-}
-
-.br-step .step-number {
-  font-weight: 600;
-}
-
-.br-step .step-label {
-  font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.85);
-  text-align: center;
-  max-width: 80px;
-  line-height: 1.3;
-}
-
-.br-step .step-progress-btn.active .step-label {
-  color: white;
-  font-weight: 600;
-}
-
-.br-step .step-current-tag {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  font-size: 0.55rem;
-  padding: 0.15rem 0.4rem;
-  border-radius: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-/* ========================================
    PAGE HEADER (Title + Back Button)
    ======================================== */
 
@@ -976,28 +875,335 @@ body {
 }
 
 /* ========================================
-   BR-STEP RESPONSIVE
+   ETAPA DO PROJETO COMPONENT
    ======================================== */
 
+.etapa-projeto-card {
+  background: linear-gradient(135deg, var(--blue-warm-vivid-70, #1351b4) 0%, var(--blue-warm-vivid-80, #0c326f) 100%);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: white;
+  box-shadow: 0 4px 12px rgba(19, 81, 180, 0.2);
+}
+
+.etapa-projeto-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.etapa-projeto-header i {
+  font-size: 1.25rem;
+}
+
+.etapa-projeto-header span {
+  font-weight: 400;
+}
+
+.etapa-atual-label {
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+}
+
+.etapa-projeto-timeline {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.etapa-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 100px;
+  position: relative;
+}
+
+.etapa-step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  background: var(--blue-warm-vivid-80, #0c326f);
+  color: rgba(255, 255, 255, 0.8);
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  z-index: 2;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.etapa-step.completed .etapa-step-circle {
+  background: var(--green-cool-vivid-50, #168821);
+  color: white;
+  border-color: var(--green-cool-vivid-50, #168821);
+}
+
+.etapa-step.current .etapa-step-circle {
+  background: white;
+  color: var(--blue-warm-vivid-70, #1351b4);
+  border-color: white;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+  transform: scale(1.15);
+}
+
+.etapa-step-line {
+  position: absolute;
+  left: 50%;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  top: 20px;
+  z-index: 1;
+}
+
+.etapa-step.completed .etapa-step-line {
+  background: var(--green-cool-vivid-50, #168821);
+}
+
+.etapa-step-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  margin-top: 0.75rem;
+  line-height: 1.3;
+  max-width: 100px;
+}
+
+.etapa-step.current .etapa-step-label {
+  color: white;
+  font-weight: 600;
+}
+
+/* ========================================
+   CRONOGRAMA FINANCEIRO TABLE
+   ======================================== */
+
+.cronograma-section {
+  background: var(--blue-warm-20, #dfe8f7) !important;
+  border-left-color: var(--blue-warm-vivid-70, #1351b4) !important;
+}
+
+.cronograma-section label {
+  display: flex;
+  align-items: center;
+  color: var(--blue-warm-vivid-70, #1351b4);
+}
+
+.cronograma-section label i {
+  color: var(--blue-warm-vivid-70, #1351b4);
+}
+
+.cronograma-table {
+  margin-top: 1rem;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--gray-20, #d9d9d9);
+}
+
+.cronograma-header,
+.cronograma-row,
+.cronograma-total {
+  display: grid;
+  grid-template-columns: 100px 180px 1fr;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.cronograma-header {
+  background: var(--blue-warm-vivid-70, #1351b4);
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cronograma-row {
+  background: white;
+  border-bottom: 1px solid var(--gray-20, #d9d9d9);
+  transition: background 0.2s ease;
+}
+
+.cronograma-row:hover {
+  background: var(--gray-2, #f8f8f8);
+}
+
+.cronograma-row:last-of-type {
+  border-bottom: none;
+}
+
+.cronograma-total {
+  background: var(--blue-warm-vivid-70, #1351b4);
+  color: white;
+  font-weight: 700;
+  border-top: 2px solid var(--blue-warm-vivid-80, #0c326f);
+}
+
+.cronograma-col-ano {
+  font-weight: 600;
+  color: var(--gray-80, #333333);
+}
+
+.cronograma-header .cronograma-col-ano,
+.cronograma-total .cronograma-col-ano {
+  color: white;
+}
+
+.cronograma-col-valor {
+  font-weight: 600;
+  color: var(--blue-warm-vivid-70, #1351b4);
+  font-size: 1rem;
+}
+
+.cronograma-header .cronograma-col-valor,
+.cronograma-total .cronograma-col-valor {
+  color: white;
+}
+
+.cronograma-total-valor {
+  font-size: 1.125rem;
+}
+
+.cronograma-col-desc {
+  color: var(--gray-60, #636363);
+  font-size: 0.875rem;
+}
+
+.cronograma-header .cronograma-col-desc {
+  color: white;
+}
+
 @media (max-width: 768px) {
-  .br-step .step-progress {
-    flex-direction: column;
+
+  .cronograma-header,
+  .cronograma-row,
+  .cronograma-total {
+    grid-template-columns: 1fr;
     gap: 0.5rem;
   }
 
-  .br-step .step-progress-btn {
+  .cronograma-col-ano::before {
+    content: 'Ano: ';
+    font-weight: 400;
+    color: var(--gray-60, #636363);
+  }
+
+  .cronograma-col-valor::before {
+    content: 'Valor: ';
+    font-weight: 400;
+    color: var(--gray-60, #636363);
+  }
+
+  .cronograma-col-desc::before {
+    content: 'Descrição: ';
+    font-weight: 400;
+    color: var(--gray-60, #636363);
+  }
+
+  .cronograma-header .cronograma-col-ano::before,
+  .cronograma-header .cronograma-col-valor::before,
+  .cronograma-header .cronograma-col-desc::before,
+  .cronograma-total .cronograma-col-ano::before,
+  .cronograma-total .cronograma-col-valor::before,
+  .cronograma-total .cronograma-col-desc::before {
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+/* ========================================
+   DISABLED MENU BUTTON STATES
+   ======================================== */
+
+.menu-button-wrapper {
+  position: relative;
+}
+
+.menu-button.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: var(--gray-5, #f1f1f1);
+  border-color: var(--gray-20, #d9d9d9);
+}
+
+.menu-button.disabled:hover {
+  transform: none;
+  background: var(--gray-5, #f1f1f1);
+  border-color: var(--gray-20, #d9d9d9);
+}
+
+.menu-button.disabled .menu-button-icon {
+  background: var(--gray-40, #888888);
+}
+
+.menu-button.disabled .menu-button-content h3,
+.menu-button.disabled .menu-button-content p {
+  color: var(--gray-60, #636363);
+}
+
+.menu-button.disabled .menu-button-arrow {
+  color: var(--gray-40, #888888);
+}
+
+.menu-button-aviso {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--gold-vivid-10, #fff5e0);
+  color: var(--gold-vivid-50, #cc8a00);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-left: 3px solid var(--gold-vivid-50, #cc8a00);
+}
+
+.menu-button-aviso i {
+  color: var(--gold-vivid-50, #cc8a00);
+}
+
+/* Responsive adjustments for Etapa do Projeto */
+@media (max-width: 768px) {
+  .etapa-projeto-timeline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .etapa-step {
     flex-direction: row;
+    align-items: center;
     min-width: auto;
-    justify-content: flex-start;
+    margin-bottom: 0.75rem;
   }
 
-  .br-step .step-info {
-    flex-direction: row;
-    gap: 0.75rem;
+  .etapa-step-circle {
+    flex-shrink: 0;
   }
 
-  .br-step .step-label {
-    max-width: none;
+  .etapa-step-line {
+    display: none;
+  }
+
+  .etapa-step-label {
+    margin-top: 0;
+    margin-left: 1rem;
     text-align: left;
+    max-width: none;
   }
 }

@@ -217,6 +217,149 @@ app.delete('/api/files/:category/:folderId', async (req, res) => {
     }
 })
 
+// ===== Webhook Routes =====
+
+// In-memory store for file analysis results (use Redis/DB in production)
+const fileAnalysisResults = new Map()
+
+/**
+ * POST /api/webhook/file-analysis
+ * Webhook endpoint to receive file analysis results from Power Automate
+ * 
+ * Expected payload:
+ * {
+ *   "fileId": "uuid",
+ *   "fileName": "documento.pdf",
+ *   "category": "parecerTecnico",
+ *   "status": "success" | "error" | "pending",
+ *   "analysis": {
+ *     "isValid": true,
+ *     "documentType": "Parecer Técnico",
+ *     "extractedData": { ... },
+ *     "validationErrors": [],
+ *     "metadata": { ... }
+ *   },
+ *   "processedAt": "2026-02-04T15:25:00Z",
+ *   "message": "Optional message"
+ * }
+ */
+app.post('/api/webhook/file-analysis', async (req, res) => {
+    const timestamp = new Date().toISOString()
+
+    console.log('\n' + '='.repeat(60))
+    console.log('[WEBHOOK] 📥 Recebendo análise de arquivo')
+    console.log('[WEBHOOK] Timestamp:', timestamp)
+    console.log('[WEBHOOK] Headers:', JSON.stringify(req.headers, null, 2))
+    console.log('[WEBHOOK] Payload:', JSON.stringify(req.body, null, 2))
+    console.log('='.repeat(60) + '\n')
+
+    try {
+        const {
+            fileId,
+            fileName,
+            category,
+            status,
+            analysis,
+            processedAt,
+            message
+        } = req.body
+
+        // Validate required fields
+        if (!fileId) {
+            console.log('[WEBHOOK] ❌ Erro: fileId é obrigatório')
+            return res.status(400).json({
+                success: false,
+                error: 'Campo obrigatório: fileId'
+            })
+        }
+
+        // Store the analysis result
+        const resultData = {
+            fileId,
+            fileName: fileName || 'unknown',
+            category: category || 'unknown',
+            status: status || 'received',
+            analysis: analysis || {},
+            processedAt: processedAt || timestamp,
+            receivedAt: timestamp,
+            message: message || null
+        }
+
+        fileAnalysisResults.set(fileId, resultData)
+
+        console.log('[WEBHOOK] ✅ Análise armazenada com sucesso')
+        console.log('[WEBHOOK] FileId:', fileId)
+        console.log('[WEBHOOK] Status:', status)
+        console.log('[WEBHOOK] Total de análises armazenadas:', fileAnalysisResults.size)
+
+        // Process based on status
+        if (status === 'success') {
+            console.log('[WEBHOOK] 📋 Documento válido - processando dados...')
+            // Here you could trigger additional processing
+            // e.g., update database, send notifications, etc.
+        } else if (status === 'error') {
+            console.log('[WEBHOOK] ⚠️ Erro na análise:', message)
+        }
+
+        res.json({
+            success: true,
+            message: 'Análise recebida e processada com sucesso',
+            data: {
+                fileId,
+                receivedAt: timestamp
+            }
+        })
+
+    } catch (error) {
+        console.error('[WEBHOOK] ❌ Erro ao processar webhook:', error)
+        res.status(500).json({
+            success: false,
+            error: 'Erro ao processar webhook',
+            details: error.message
+        })
+    }
+})
+
+/**
+ * GET /api/webhook/file-analysis/:fileId
+ * Get the analysis result for a specific file
+ */
+app.get('/api/webhook/file-analysis/:fileId', (req, res) => {
+    const { fileId } = req.params
+
+    console.log('[WEBHOOK] 🔍 Consultando análise:', fileId)
+
+    const result = fileAnalysisResults.get(fileId)
+
+    if (!result) {
+        return res.status(404).json({
+            success: false,
+            error: 'Análise não encontrada para este arquivo'
+        })
+    }
+
+    res.json({
+        success: true,
+        data: result
+    })
+})
+
+/**
+ * GET /api/webhook/file-analysis
+ * List all stored analysis results
+ */
+app.get('/api/webhook/file-analysis', (req, res) => {
+    const results = Array.from(fileAnalysisResults.values())
+
+    console.log('[WEBHOOK] 📋 Listando todas as análises:', results.length)
+
+    res.json({
+        success: true,
+        count: results.length,
+        data: results
+    })
+})
+
 // ===== PTAX Exchange Rate Routes =====
 
 /**

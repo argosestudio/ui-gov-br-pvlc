@@ -10,6 +10,12 @@ function ProjetoPage() {
         justificativa: 'Necessidade de modernização da infraestrutura urbana para atender demandas crescentes',
         localizacao: 'São Paulo - SP',
         periodoExecucao: 'Janeiro 2026 - Dezembro 2028',
+        cronogramaFinanceiro: [
+            { ano: '2026', valor: 'R$ 15.000.000,00', descricao: 'Fase inicial: estudos e projetos executivos' },
+            { ano: '2027', valor: 'R$ 45.000.000,00', descricao: 'Fase de execução: obras civis' },
+            { ano: '2028', valor: 'R$ 25.000.000,00', descricao: 'Fase final: acabamentos e entrega' }
+        ],
+        valorTotal: 'R$ 85.000.000,00',
         links: [
             { label: 'Portal do Projeto', url: 'https://exemplo.gov.br/projeto' },
             { label: 'Documentação Técnica', url: 'https://exemplo.gov.br/docs' }
@@ -78,6 +84,33 @@ function ProjetoPage() {
                                     {link.label}
                                 </a>
                             ))}
+                        </div>
+                    </div>
+
+                    {/* Cronograma Financeiro */}
+                    <div className="projeto-info-item cronograma-section">
+                        <label>
+                            <i className="fas fa-chart-line mr-1" aria-hidden="true"></i>
+                            Cronograma Financeiro
+                        </label>
+                        <div className="cronograma-table">
+                            <div className="cronograma-header">
+                                <span className="cronograma-col-ano">Ano</span>
+                                <span className="cronograma-col-valor">Valor Previsto</span>
+                                <span className="cronograma-col-desc">Descrição</span>
+                            </div>
+                            {projectInfo.cronogramaFinanceiro.map((item, index) => (
+                                <div key={index} className="cronograma-row">
+                                    <span className="cronograma-col-ano">{item.ano}</span>
+                                    <span className="cronograma-col-valor">{item.valor}</span>
+                                    <span className="cronograma-col-desc">{item.descricao}</span>
+                                </div>
+                            ))}
+                            <div className="cronograma-total">
+                                <span className="cronograma-col-ano">Total</span>
+                                <span className="cronograma-col-valor cronograma-total-valor">{projectInfo.valorTotal}</span>
+                                <span className="cronograma-col-desc"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
