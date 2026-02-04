@@ -1,0 +1,511 @@
+/* Reset e estilos base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Rawline', 'Raleway', sans-serif;
+  background-color: var(--gray-2, #f8f8f8);
+  min-height: 100vh;
+}
+
+/* Ajustes para o layout principal */
+.main-content {
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+/* Card de upload customizado */
+.upload-card {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.upload-card h1 {
+  color: var(--blue-warm-vivid-70, #1351b4);
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+/* Área de upload estilizada */
+.upload-area {
+  border: 2px dashed var(--blue-warm-vivid-70, #1351b4);
+  border-radius: 8px;
+  padding: 3rem 2rem;
+  text-align: center;
+  background-color: var(--blue-warm-20, #dfe8f7);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-area:hover {
+  background-color: var(--blue-warm-vivid-10, #c5d4eb);
+  border-color: var(--blue-warm-vivid-80, #0c326f);
+}
+
+.upload-area.dragover {
+  background-color: var(--blue-warm-vivid-10, #c5d4eb);
+  border-color: var(--blue-warm-vivid-80, #0c326f);
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: var(--blue-warm-vivid-70, #1351b4);
+  margin-bottom: 1rem;
+}
+
+.upload-text {
+  color: var(--gray-80, #333333);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+  color: var(--gray-60, #636363);
+  font-size: 0.875rem;
+}
+
+/* Lista de arquivos */
+.file-list {
+  margin-top: 1.5rem;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--gray-2, #f8f8f8);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  border-left: 4px solid var(--green-cool-vivid-50, #168821);
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.file-info i {
+  color: var(--blue-warm-vivid-70, #1351b4);
+  font-size: 1.25rem;
+}
+
+.file-name {
+  font-weight: 500;
+  color: var(--gray-80, #333333);
+}
+
+.file-size {
+  color: var(--gray-60, #636363);
+  font-size: 0.875rem;
+}
+
+.remove-file {
+  background: none;
+  border: none;
+  color: var(--red-vivid-50, #e52207);
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.remove-file:hover {
+  color: var(--red-vivid-70, #b50909);
+}
+
+/* Botões */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: flex-end;
+}
+
+/* Mensagem de sucesso */
+.success-message {
+  background-color: var(--green-cool-vivid-5, #e6f2e8);
+  border-left: 4px solid var(--green-cool-vivid-50, #168821);
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.success-message i {
+  color: var(--green-cool-vivid-50, #168821);
+  font-size: 1.25rem;
+}
+
+.success-message span {
+  color: var(--gray-80, #333333);
+}
+
+/* Footer fixo */
+.br-footer {
+  margin-top: auto;
+}
+
+/* ========================================
+   ACORDEÕES - Design System Gov.br
+   ======================================== */
+
+.accordions-container {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.br-accordion {
+  border: 1px solid var(--gray-20, #d9d9d9);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: var(--gray-2, #f8f8f8);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.accordion-header:hover {
+  background: var(--blue-warm-20, #dfe8f7);
+}
+
+.accordion-header.active {
+  background: var(--blue-warm-vivid-70, #1351b4);
+  color: #ffffff;
+}
+
+.accordion-header.active .accordion-title {
+  color: #ffffff;
+}
+
+.accordion-header.active i {
+  color: #ffffff;
+}
+
+.accordion-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-80, #333333);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.accordion-title i {
+  color: var(--blue-warm-vivid-70, #1351b4);
+  font-size: 1.1rem;
+}
+
+.accordion-header.active .accordion-title i {
+  color: #ffffff;
+}
+
+.file-badge {
+  background: var(--green-cool-vivid-50, #168821);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  margin-left: 0.5rem;
+}
+
+.accordion-header.active .file-badge {
+  background: #ffffff;
+  color: var(--blue-warm-vivid-70, #1351b4);
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+  padding: 0 1.25rem;
+  background: #ffffff;
+}
+
+.accordion-content.show {
+  max-height: 600px;
+  padding: 1.25rem;
+  border-top: 1px solid var(--gray-20, #d9d9d9);
+}
+
+.accordion-description {
+  color: var(--gray-60, #636363);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+/* ========================================
+   UPLOAD COMPACTO (para acordeões)
+   ======================================== */
+
+.file-upload-component {
+  width: 100%;
+}
+
+.upload-area-compact {
+  border: 2px dashed var(--blue-warm-vivid-70, #1351b4);
+  border-radius: 6px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  background-color: var(--blue-warm-20, #dfe8f7);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-area-compact:hover {
+  background-color: var(--blue-warm-vivid-10, #c5d4eb);
+  border-color: var(--blue-warm-vivid-80, #0c326f);
+}
+
+.upload-area-compact.dragover {
+  background-color: var(--blue-warm-vivid-10, #c5d4eb);
+  border-color: var(--blue-warm-vivid-80, #0c326f);
+  transform: scale(1.01);
+}
+
+.upload-icon-small {
+  font-size: 2rem;
+  color: var(--blue-warm-vivid-70, #1351b4);
+  margin-bottom: 0.5rem;
+}
+
+.upload-text-small {
+  color: var(--gray-80, #333333);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.upload-hint-small {
+  color: var(--gray-60, #636363);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.file-list-compact {
+  margin-top: 0.75rem;
+}
+
+.file-item-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  background: var(--gray-2, #f8f8f8);
+  border-radius: 4px;
+  margin-bottom: 0.4rem;
+  border-left: 3px solid var(--green-cool-vivid-50, #168821);
+}
+
+.file-item-compact .file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.file-item-compact .file-info i {
+  color: var(--blue-warm-vivid-70, #1351b4);
+  font-size: 1rem;
+}
+
+.file-name-small {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--gray-80, #333333);
+}
+
+.file-size-small {
+  color: var(--gray-60, #636363);
+  font-size: 0.75rem;
+}
+
+/* ========================================
+   PÁGINA DE DOCUMENTOS
+   ======================================== */
+
+.page-description {
+  color: var(--gray-60, #636363);
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+/* ========================================
+   MENU PRINCIPAL - Botões de Opções
+   ======================================== */
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.menu-button {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--gray-2, #f8f8f8);
+  border: 2px solid var(--gray-20, #d9d9d9);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.menu-button:hover {
+  background: var(--blue-warm-20, #dfe8f7);
+  border-color: var(--blue-warm-vivid-70, #1351b4);
+  transform: translateX(4px);
+}
+
+.menu-button-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blue-warm-vivid-70, #1351b4);
+  border-radius: 12px;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.menu-button-icon i {
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+
+.menu-button-content {
+  flex: 1;
+}
+
+.menu-button-content h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--gray-80, #333333);
+  margin-bottom: 0.25rem;
+}
+
+.menu-button-content p {
+  font-size: 0.875rem;
+  color: var(--gray-60, #636363);
+  margin: 0;
+}
+
+.menu-button-arrow {
+  color: var(--blue-warm-vivid-70, #1351b4);
+  font-size: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+.menu-button:hover .menu-button-arrow {
+  transform: translateX(4px);
+}
+
+/* ========================================
+   DADOS INTERNOS - Lista de informações
+   ======================================== */
+
+.dados-internos-container {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dado-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: var(--gray-2, #f8f8f8);
+  border-radius: 6px;
+  border-left: 4px solid var(--blue-warm-vivid-70, #1351b4);
+  transition: all 0.2s ease;
+}
+
+.dado-item:hover {
+  background: var(--blue-warm-20, #dfe8f7);
+}
+
+.dado-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dado-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gray-60, #636363);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dado-valor {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--gray-80, #333333);
+}
+
+.dado-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-badge.pendente {
+  background: var(--gold-vivid-10, #fff5e0);
+  color: var(--gold-vivid-50, #cc8a00);
+}
+
+.status-badge.pendente i {
+  color: var(--gold-vivid-50, #cc8a00);
+}
+
+.status-badge.atualizado {
+  background: var(--green-cool-vivid-5, #e6f2e8);
+  color: var(--green-cool-vivid-50, #168821);
+}
+
+.status-badge.atualizado i {
+  color: var(--green-cool-vivid-50, #168821);
+}
+
+.dados-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
