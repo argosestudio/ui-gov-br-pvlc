@@ -509,3 +509,32 @@ body {
   display: flex;
   justify-content: flex-end;
 }
+
+/* ========================================
+   LOADING & UPLOAD STATES
+   ======================================== */
+
+.upload-area-compact.uploading {
+  opacity: 0.7;
+  cursor: wait;
+  pointer-events: none;
+}
+
+.upload-area-compact.uploading .upload-icon-small {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-style: italic;
+  color: var(--blue-warm-vivid-70, #1351b4);
+}
