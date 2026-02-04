@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import FileUpload from '../components/FileUpload'
+
+const API_URL = 'http://localhost:3001/api'
 
 function DocumentosPage() {
     const [currentView, setCurrentView] = useState('menu') // 'menu', 'documentos', 'dados'
@@ -11,6 +13,64 @@ function DocumentosPage() {
         certificadoTribunalContas: []
     })
     const [isSubmitted, setIsSubmitted] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+
+    // Fetch persisted files from server on mount
+    useEffect(() => {
+        fetchPersistedFiles()
+    }, [])
+
+    const fetchPersistedFiles = async () => {
+        try {
+            setIsLoading(true)
+            const response = await fetch(`${API_URL}/files`)
+
+            if (!response.ok) {
+                throw new Error('Erro ao buscar arquivos')
+            }
+
+            const result = await response.json()
+
+            // Group files by category
+            const groupedFiles = {
+                parecerJudiciario: [],
+                parecerTecnico: [],
+                leiAutorizadora: [],
+                certificadoTribunalContas: []
+            }
+
+            result.data.forEach(file => {
+                if (groupedFiles[file.category]) {
+                    groupedFiles[file.category].push({
+                        ...file,
+                        name: file.fileName,
+                        type: getFileType(file.fileName)
+                    })
+                }
+            })
+
+            setAllFiles(groupedFiles)
+        } catch (error) {
+            console.error('Erro ao buscar arquivos:', error)
+            // Server might not be running, that's ok
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const getFileType = (fileName) => {
+        const ext = fileName.split('.').pop()?.toLowerCase()
+        const typeMap = {
+            'pdf': 'application/pdf',
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'png': 'image/png',
+            'gif': 'image/gif',
+            'doc': 'application/msword',
+            'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+        return typeMap[ext] || 'application/octet-stream'
+    }
 
     const toggleAccordion = (id) => {
         setOpenAccordion(openAccordion === id ? null : id)
@@ -135,6 +195,7 @@ function DocumentosPage() {
             </h1>
             <p className="page-description">
                 Selecione a categoria e anexe os documentos correspondentes.
+                {isLoading && <span className="loading-text"> Carregando arquivos salvos...</span>}
             </p>
 
             {/* Acordeões */}
@@ -168,6 +229,7 @@ function DocumentosPage() {
                                 <FileUpload
                                     id={accordion.id}
                                     onFilesChange={handleFilesChange}
+                                    initialFiles={allFiles[accordion.id]}
                                 />
                             </div>
                         </div>

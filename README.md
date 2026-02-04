@@ -1,16 +1,110 @@
-# React + Vite
+# Sistema PVLC - Gerenciamento de Documentos
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistema para gerenciamento de documentos do PVLC (Programa de Verificação de Limites e Condições) com persistência em bucket storage.
 
-Currently, two official plugins are available:
+## 🏗️ Estrutura do Projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+test-ui-gov/
+├── ui-pvlc/              # Frontend React + Vite
+│   ├── src/
+│   │   ├── components/   # Componentes reutilizáveis
+│   │   └── pages/        # Páginas da aplicação
+│   └── package.json
+├── backend/              # Backend Express.js
+│   ├── adapters/         # Adapters de storage (MinIO/S3)
+│   └── package.json
+├── docker-compose.yml    # MinIO (bucket storage)
+├── Makefile              # Comandos de desenvolvimento
+└── README.md
+```
 
-## React Compiler
+## 🚀 Início Rápido
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Pré-requisitos
 
-## Expanding the ESLint configuration
+- Node.js 18+
+- Docker e Docker Compose
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Instalação
+
+```bash
+# Instalar todas as dependências
+make install
+```
+
+### Desenvolvimento
+
+```bash
+# Iniciar todos os serviços (Frontend + Backend + MinIO)
+make all
+
+# Ou iniciar serviços individualmente:
+make dev-ui        # Apenas frontend (http://localhost:5173)
+make dev-backend   # Apenas backend (http://localhost:3001)
+make docker-up     # Apenas MinIO (http://localhost:9001)
+```
+
+### Comandos Disponíveis
+
+| Comando            | Descrição                              |
+|--------------------|----------------------------------------|
+| `make help`        | Lista todos os comandos disponíveis    |
+| `make install`     | Instala dependências (UI + Backend)    |
+| `make dev-ui`      | Inicia apenas o frontend               |
+| `make dev-backend` | Inicia apenas o backend                |
+| `make docker-up`   | Inicia MinIO (Docker)                  |
+| `make docker-down` | Para MinIO (Docker)                    |
+| `make dev`         | Inicia Backend + MinIO                 |
+| `make all`         | Inicia todos os serviços               |
+| `make clean`       | Remove node_modules e volumes Docker   |
+
+## 📦 API Endpoints
+
+| Método   | Endpoint                          | Descrição                    |
+|----------|-----------------------------------|------------------------------|
+| `POST`   | `/api/files`                      | Upload de arquivo            |
+| `GET`    | `/api/files`                      | Lista todos os arquivos      |
+| `GET`    | `/api/files?category=<cat>`       | Lista arquivos por categoria |
+| `GET`    | `/api/files/:category/:folderId`  | Download de arquivo          |
+| `DELETE` | `/api/files/:category/:folderId`  | Remove arquivo               |
+| `GET`    | `/api/health`                     | Health check                 |
+
+## 🗄️ Storage
+
+O sistema utiliza MinIO como bucket storage local, compatível com AWS S3. A arquitetura utiliza o padrão Adapter, permitindo fácil migração para S3 ou outros serviços de cloud storage.
+
+### Acessar Console do MinIO
+
+- URL: http://localhost:9001
+- Usuário: `minioadmin`
+- Senha: `minioadmin`
+
+### Estrutura de Armazenamento
+
+```
+documents/                        # Bucket
+├── parecerJudiciario/           # Categoria
+│   └── {uuid}/                  # Pasta única por arquivo
+│       └── documento.pdf
+├── parecerTecnico/
+│   └── {uuid}/
+│       └── parecer.docx
+└── ...
+```
+
+## 🛠️ Tecnologias
+
+### Frontend
+- React 19
+- Vite 7
+- GovBR Design System
+
+### Backend
+- Express.js
+- MinIO SDK
+- Multer (upload de arquivos)
+
+### Infraestrutura
+- Docker + Docker Compose
+- MinIO (S3-compatible storage)
