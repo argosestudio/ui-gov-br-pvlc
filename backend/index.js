@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import multer from 'multer'
 import { MinioAdapter } from './adapters/minioAdapter.js'
+import { getCurrentBimonthlyRate, getCurrentBimonthInfo } from './services/bimonthlyExchangeService.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -34,16 +35,17 @@ const upload = multer({
 })
 
 // Initialize storage adapter
-const storage = new MinioAdapter()
+let storage = null
 
-// Initialize storage on startup
+// Initialize storage on startup (may fail if MinIO is not running)
 async function initializeStorage() {
     try {
+        storage = new MinioAdapter()
         await storage.initialize()
         console.log('✅ Storage initialized successfully')
     } catch (error) {
-        console.error('❌ Failed to initialize storage:', error)
-        process.exit(1)
+        console.warn('⚠️ Storage not available (MinIO not running):', error.message)
+        storage = null
     }
 }
 
@@ -55,6 +57,10 @@ async function initializeStorage() {
  */
 app.post('/api/files', upload.single('file'), async (req, res) => {
     try {
+        if (!storage) {
+            return res.status(503).json({ error: 'Storage não disponível. Inicie o MinIO.' })
+        }
+
         if (!req.file) {
             return res.status(400).json({ error: 'Nenhum arquivo enviado' })
         }
@@ -87,6 +93,10 @@ app.post('/api/files', upload.single('file'), async (req, res) => {
  */
 app.get('/api/files', async (req, res) => {
     try {
+        if (!storage) {
+            return res.json({ success: true, data: [] })
+        }
+
         const { category } = req.query
         const files = await storage.listFiles(category || null)
 
@@ -106,6 +116,10 @@ app.get('/api/files', async (req, res) => {
  */
 app.get('/api/files/:category/:folderId', async (req, res) => {
     try {
+        if (!storage) {
+            return res.status(503).json({ error: 'Storage não disponível' })
+        }
+
         const { category, folderId } = req.params
         const file = await storage.getFile(folderId, category)
 
@@ -132,6 +146,10 @@ app.get('/api/files/:category/:folderId', async (req, res) => {
  */
 app.delete('/api/files/:category/:folderId', async (req, res) => {
     try {
+        if (!storage) {
+            return res.status(503).json({ error: 'Storage não disponível' })
+        }
+
         const { category, folderId } = req.params
         const deleted = await storage.deleteFile(folderId, category)
 
@@ -149,13 +167,57 @@ app.delete('/api/files/:category/:folderId', async (req, res) => {
     }
 })
 
+// ===== PTAX Exchange Rate Routes =====
+
+/**
+ * GET /api/ptax
+ * Get the PTAX exchange rate for the first business day of the current bimonth
+ */
+app.get('/api/ptax', async (req, res) => {
+    try {
+        const rate = await getCurrentBimonthlyRate()
+
+        res.json({
+            success: true,
+            data: rate
+        })
+    } catch (error) {
+        console.error('Error fetching PTAX rate:', error)
+        res.status(500).json({
+            success: false,
+            error: error.message
+        })
+    }
+})
+
+/**
+ * GET /api/ptax/info
+ * Get information about the current bimonth (without fetching the rate)
+ */
+app.get('/api/ptax/info', (req, res) => {
+    try {
+        const info = getCurrentBimonthInfo()
+
+        res.json({
+            success: true,
+            data: info
+        })
+    } catch (error) {
+        console.error('Error getting bimonth info:', error)
+        res.status(500).json({
+            success: false,
+            error: error.message
+        })
+    }
+})
+
 /**
  * GET /api/health
  * Health check endpoint
  */
 app.get('/api/health', async (req, res) => {
     try {
-        const storageHealthy = await storage.healthCheck()
+        const storageHealthy = storage ? await storage.healthCheck() : false
 
         res.json({
             status: storageHealthy ? 'healthy' : 'degraded',

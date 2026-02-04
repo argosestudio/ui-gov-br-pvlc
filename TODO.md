@@ -29,3 +29,5 @@ O sistema possui uma REGRA DE NEGÓCIO RÍGIDA sobre a data de referência:
 * **Parâmetro Query:** `@dataCotacao='MM-DD-YYYY'` (Atenção ao formato americano e às aspas simples na string da query).
 
 Gere o código (preferencialmente em TypeScript/Node.js), incluindo a função auxiliar de cálculo de data e a lógica de retry para dias não úteis.
+
+**Faça um endpoint no backend para ser consumido pelo frontend e no frontend faça a integração na parte Consulta taxa de câmbio banco central para que ele mostre a taxa de câmbio utilizando essa chamada de API que iremos desenvolvera.**
