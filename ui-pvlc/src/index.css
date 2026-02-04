@@ -538,3 +538,65 @@ body {
   font-style: italic;
   color: var(--blue-warm-vivid-70, #1351b4);
 }
+
+/* ========================================
+   PTAX & DATA STATES
+   ======================================== */
+
+.dado-item-success {
+  border-left-color: var(--green-cool-vivid-50, #168821);
+  background: var(--green-cool-vivid-5, #e6f2e8);
+}
+
+.dado-valor-highlight {
+  color: var(--green-cool-vivid-50, #168821);
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.dado-extra {
+  font-size: 0.7rem;
+  color: var(--gray-60, #636363);
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+.status-badge.erro {
+  background: var(--red-vivid-10, #fce8e8);
+  color: var(--red-vivid-50, #e52207);
+}
+
+.status-badge.erro i {
+  color: var(--red-vivid-50, #e52207);
+}
+
+.error-message {
+  background-color: var(--red-vivid-10, #fce8e8);
+  border-left: 4px solid var(--red-vivid-50, #e52207);
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.error-message i {
+  color: var(--red-vivid-50, #e52207);
+  font-size: 1.25rem;
+}
+
+.error-message span {
+  color: var(--gray-80, #333333);
+  flex: 1;
+}
+
+.error-message .br-button {
+  margin-left: auto;
+}
+
+.br-button.small {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}

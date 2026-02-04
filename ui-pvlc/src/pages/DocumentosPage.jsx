@@ -15,10 +15,22 @@ function DocumentosPage() {
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
 
+    // PTAX exchange rate state
+    const [ptaxData, setPtaxData] = useState(null)
+    const [ptaxLoading, setPtaxLoading] = useState(false)
+    const [ptaxError, setPtaxError] = useState(null)
+
     // Fetch persisted files from server on mount
     useEffect(() => {
         fetchPersistedFiles()
     }, [])
+
+    // Fetch PTAX when entering dados view
+    useEffect(() => {
+        if (currentView === 'dados' && !ptaxData && !ptaxLoading) {
+            fetchPTAXRate()
+        }
+    }, [currentView])
 
     const fetchPersistedFiles = async () => {
         try {
@@ -55,6 +67,27 @@ function DocumentosPage() {
             // Server might not be running, that's ok
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    const fetchPTAXRate = async () => {
+        try {
+            setPtaxLoading(true)
+            setPtaxError(null)
+
+            const response = await fetch(`${API_URL}/ptax`)
+            const result = await response.json()
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || 'Erro ao buscar taxa PTAX')
+            }
+
+            setPtaxData(result.data)
+        } catch (error) {
+            console.error('Erro ao buscar PTAX:', error)
+            setPtaxError(error.message)
+        } finally {
+            setPtaxLoading(false)
         }
     }
 
@@ -123,11 +156,37 @@ function DocumentosPage() {
         }
     ]
 
-    // Dados internos simulados (serão hidratados via API posteriormente)
-    const dadosInternos = [
+    // Helper function to get PTAX display value
+    const getPTAXValue = () => {
+        if (ptaxLoading) return 'Carregando...'
+        if (ptaxError) return 'Erro ao carregar'
+        if (ptaxData) return `R$ ${ptaxData.cotacaoVenda.toFixed(4)}`
+        return 'Aguardando carregamento...'
+    }
+
+    const getPTAXStatus = () => {
+        if (ptaxLoading) return 'pendente'
+        if (ptaxError) return 'erro'
+        if (ptaxData) return 'atualizado'
+        return 'pendente'
+    }
+
+    // Dados internos - agora com integração PTAX
+    const getDadosInternos = () => [
         { id: 1, label: 'Resolução Confiex', valor: 'Aguardando carregamento...', status: 'pendente' },
         { id: 2, label: 'Declaração competência tributária', valor: 'Aguardando carregamento...', status: 'pendente' },
-        { id: 3, label: 'Consulta taxa de câmbio banco central', valor: 'Aguardando carregamento...', status: 'pendente' },
+        {
+            id: 3,
+            label: 'Consulta taxa de câmbio banco central',
+            valor: getPTAXValue(),
+            status: getPTAXStatus(),
+            extra: ptaxData ? {
+                dataCotacao: ptaxData.dataCotacao,
+                bimestre: ptaxData.bimestre,
+                fonte: ptaxData.fonte,
+                cached: ptaxData.cached
+            } : null
+        },
         { id: 4, label: 'Quadros de despesa com pessoal', valor: 'Aguardando carregamento...', status: 'pendente' },
         { id: 5, label: 'RGF E RREO exercício anterior', valor: 'Aguardando carregamento...', status: 'pendente' },
         { id: 6, label: 'RGF e RREO exercício em curso', valor: 'Aguardando carregamento...', status: 'pendente' },
@@ -268,54 +327,90 @@ function DocumentosPage() {
     )
 
     // Renderiza a tela de dados internos
-    const renderDadosInternos = () => (
-        <div className="upload-card">
-            <h1>
-                <i className="fas fa-database mr-2" aria-hidden="true"></i>
-                Análise de Dados Internos
-            </h1>
-            <p className="page-description">
-                Dados obtidos via integração com as bases do Gov.br. Estas informações são atualizadas automaticamente.
-            </p>
+    const renderDadosInternos = () => {
+        const dadosInternos = getDadosInternos()
 
-            {/* Lista de dados internos */}
-            <div className="dados-internos-container">
-                {dadosInternos.map((dado) => (
-                    <div key={dado.id} className="dado-item">
-                        <div className="dado-info">
-                            <span className="dado-label">{dado.label}</span>
-                            <span className="dado-valor">{dado.valor}</span>
+        return (
+            <div className="upload-card">
+                <h1>
+                    <i className="fas fa-database mr-2" aria-hidden="true"></i>
+                    Análise de Dados Internos
+                </h1>
+                <p className="page-description">
+                    Dados obtidos via integração com as bases do Gov.br. Estas informações são atualizadas automaticamente.
+                </p>
+
+                {/* Lista de dados internos */}
+                <div className="dados-internos-container">
+                    {dadosInternos.map((dado) => (
+                        <div key={dado.id} className={`dado-item ${dado.status === 'atualizado' ? 'dado-item-success' : ''}`}>
+                            <div className="dado-info">
+                                <span className="dado-label">{dado.label}</span>
+                                <span className={`dado-valor ${dado.status === 'atualizado' ? 'dado-valor-highlight' : ''}`}>
+                                    {dado.valor}
+                                </span>
+                                {dado.extra && (
+                                    <span className="dado-extra">
+                                        Cotação de {dado.extra.dataCotacao} • {dado.extra.fonte}
+                                        {dado.extra.cached && ' (cache)'}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="dado-status">
+                                <span className={`status-badge ${dado.status}`}>
+                                    <i className={`fas ${dado.status === 'pendente' ? 'fa-clock' :
+                                            dado.status === 'erro' ? 'fa-exclamation-circle' :
+                                                'fa-check-circle'
+                                        }`} aria-hidden="true"></i>
+                                    {dado.status === 'pendente' ? 'Pendente' :
+                                        dado.status === 'erro' ? 'Erro' :
+                                            'Atualizado'}
+                                </span>
+                            </div>
                         </div>
-                        <div className="dado-status">
-                            <span className={`status-badge ${dado.status}`}>
-                                <i className={`fas ${dado.status === 'pendente' ? 'fa-clock' : 'fa-check-circle'}`} aria-hidden="true"></i>
-                                {dado.status === 'pendente' ? 'Pendente' : 'Atualizado'}
-                            </span>
-                        </div>
+                    ))}
+                </div>
+
+                {/* Mensagem de erro PTAX */}
+                {ptaxError && (
+                    <div className="error-message" role="alert">
+                        <i className="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                        <span><strong>Erro PTAX:</strong> {ptaxError}</span>
+                        <button
+                            className="br-button secondary small"
+                            onClick={fetchPTAXRate}
+                            disabled={ptaxLoading}
+                        >
+                            Tentar novamente
+                        </button>
                     </div>
-                ))}
-            </div>
+                )}
 
-            {/* Botão de atualização */}
-            <div className="dados-actions">
-                <button className="br-button secondary" disabled>
-                    <i className="fas fa-sync-alt mr-1" aria-hidden="true"></i>
-                    Atualizar Dados
-                </button>
-            </div>
+                {/* Botão de atualização */}
+                <div className="dados-actions">
+                    <button
+                        className="br-button secondary"
+                        onClick={fetchPTAXRate}
+                        disabled={ptaxLoading}
+                    >
+                        <i className={`fas ${ptaxLoading ? 'fa-spinner fa-spin' : 'fa-sync-alt'} mr-1`} aria-hidden="true"></i>
+                        {ptaxLoading ? 'Atualizando...' : 'Atualizar Dados'}
+                    </button>
+                </div>
 
-            {/* Botões de Ação */}
-            <div className="button-group">
-                <button
-                    className="br-button secondary"
-                    onClick={() => setCurrentView('menu')}
-                >
-                    <i className="fas fa-arrow-left mr-1" aria-hidden="true"></i>
-                    Voltar
-                </button>
+                {/* Botões de Ação */}
+                <div className="button-group">
+                    <button
+                        className="br-button secondary"
+                        onClick={() => setCurrentView('menu')}
+                    >
+                        <i className="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+                        Voltar
+                    </button>
+                </div>
             </div>
-        </div>
-    )
+        )
+    }
 
     return (
         <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
