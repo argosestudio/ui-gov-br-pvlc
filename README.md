@@ -6,7 +6,7 @@ Sistema para gerenciamento de documentos do PVLC (Programa de Verificação de L
 
 ```
 test-ui-gov/
-├── ui-pvlc/              # Frontend React + Vite
+├── ui/              # Frontend React + Vite
 │   ├── src/
 │   │   ├── components/   # Componentes reutilizáveis
 │   │   └── pages/        # Páginas da aplicação

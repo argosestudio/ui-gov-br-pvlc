@@ -54,32 +54,82 @@ async function initializeStorage() {
 /**
  * POST /api/files
  * Upload a file to storage
+ * Supports both:
+ * - FormData with multipart/form-data (legacy)
+ * - JSON with base64 encoded content (new)
  */
-app.post('/api/files', upload.single('file'), async (req, res) => {
+app.post('/api/files', async (req, res) => {
     try {
         if (!storage) {
             return res.status(503).json({ error: 'Storage não disponível. Inicie o MinIO.' })
         }
 
-        if (!req.file) {
-            return res.status(400).json({ error: 'Nenhum arquivo enviado' })
+        // Check if this is a JSON request with base64 content
+        if (req.is('application/json') && req.body.content) {
+            const { fileName, mimeType, category, size, content } = req.body
+
+            if (!fileName || !content || !category) {
+                return res.status(400).json({
+                    error: 'Campos obrigatórios: fileName, content (base64), category'
+                })
+            }
+
+            // Validate mime type
+            const allowedTypes = [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+                'image/gif',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ]
+            if (!allowedTypes.includes(mimeType)) {
+                return res.status(400).json({ error: 'Tipo de arquivo não permitido' })
+            }
+
+            // Convert base64 to buffer
+            const fileBuffer = Buffer.from(content, 'base64')
+
+            // Upload to storage
+            const result = await storage.uploadFile(
+                fileBuffer,
+                fileName,
+                category,
+                mimeType
+            )
+
+            return res.status(201).json({
+                success: true,
+                data: result
+            })
         }
 
-        const { category } = req.body
-        if (!category) {
-            return res.status(400).json({ error: 'Categoria é obrigatória' })
-        }
+        // Legacy: Handle FormData with multer
+        upload.single('file')(req, res, async (err) => {
+            if (err) {
+                return res.status(400).json({ error: err.message })
+            }
 
-        const result = await storage.uploadFile(
-            req.file.buffer,
-            req.file.originalname,
-            category,
-            req.file.mimetype
-        )
+            if (!req.file) {
+                return res.status(400).json({ error: 'Nenhum arquivo enviado' })
+            }
 
-        res.status(201).json({
-            success: true,
-            data: result
+            const { category } = req.body
+            if (!category) {
+                return res.status(400).json({ error: 'Categoria é obrigatória' })
+            }
+
+            const result = await storage.uploadFile(
+                req.file.buffer,
+                req.file.originalname,
+                category,
+                req.file.mimetype
+            )
+
+            res.status(201).json({
+                success: true,
+                data: result
+            })
         })
     } catch (error) {
         console.error('Error uploading file:', error)
@@ -165,6 +215,149 @@ app.delete('/api/files/:category/:folderId', async (req, res) => {
         console.error('Error deleting file:', error)
         res.status(500).json({ error: 'Erro ao remover arquivo' })
     }
+})
+
+// ===== Webhook Routes =====
+
+// In-memory store for file analysis results (use Redis/DB in production)
+const fileAnalysisResults = new Map()
+
+/**
+ * POST /api/webhook/file-analysis
+ * Webhook endpoint to receive file analysis results from Power Automate
+ * 
+ * Expected payload:
+ * {
+ *   "fileId": "uuid",
+ *   "fileName": "documento.pdf",
+ *   "category": "parecerTecnico",
+ *   "status": "success" | "error" | "pending",
+ *   "analysis": {
+ *     "isValid": true,
+ *     "documentType": "Parecer Técnico",
+ *     "extractedData": { ... },
+ *     "validationErrors": [],
+ *     "metadata": { ... }
+ *   },
+ *   "processedAt": "2026-02-04T15:25:00Z",
+ *   "message": "Optional message"
+ * }
+ */
+app.post('/api/webhook/file-analysis', async (req, res) => {
+    const timestamp = new Date().toISOString()
+
+    console.log('\n' + '='.repeat(60))
+    console.log('[WEBHOOK] 📥 Recebendo análise de arquivo')
+    console.log('[WEBHOOK] Timestamp:', timestamp)
+    console.log('[WEBHOOK] Headers:', JSON.stringify(req.headers, null, 2))
+    console.log('[WEBHOOK] Payload:', JSON.stringify(req.body, null, 2))
+    console.log('='.repeat(60) + '\n')
+
+    try {
+        const {
+            fileId,
+            fileName,
+            category,
+            status,
+            analysis,
+            processedAt,
+            message
+        } = req.body
+
+        // Validate required fields
+        if (!fileId) {
+            console.log('[WEBHOOK] ❌ Erro: fileId é obrigatório')
+            return res.status(400).json({
+                success: false,
+                error: 'Campo obrigatório: fileId'
+            })
+        }
+
+        // Store the analysis result
+        const resultData = {
+            fileId,
+            fileName: fileName || 'unknown',
+            category: category || 'unknown',
+            status: status || 'received',
+            analysis: analysis || {},
+            processedAt: processedAt || timestamp,
+            receivedAt: timestamp,
+            message: message || null
+        }
+
+        fileAnalysisResults.set(fileId, resultData)
+
+        console.log('[WEBHOOK] ✅ Análise armazenada com sucesso')
+        console.log('[WEBHOOK] FileId:', fileId)
+        console.log('[WEBHOOK] Status:', status)
+        console.log('[WEBHOOK] Total de análises armazenadas:', fileAnalysisResults.size)
+
+        // Process based on status
+        if (status === 'success') {
+            console.log('[WEBHOOK] 📋 Documento válido - processando dados...')
+            // Here you could trigger additional processing
+            // e.g., update database, send notifications, etc.
+        } else if (status === 'error') {
+            console.log('[WEBHOOK] ⚠️ Erro na análise:', message)
+        }
+
+        res.json({
+            success: true,
+            message: 'Análise recebida e processada com sucesso',
+            data: {
+                fileId,
+                receivedAt: timestamp
+            }
+        })
+
+    } catch (error) {
+        console.error('[WEBHOOK] ❌ Erro ao processar webhook:', error)
+        res.status(500).json({
+            success: false,
+            error: 'Erro ao processar webhook',
+            details: error.message
+        })
+    }
+})
+
+/**
+ * GET /api/webhook/file-analysis/:fileId
+ * Get the analysis result for a specific file
+ */
+app.get('/api/webhook/file-analysis/:fileId', (req, res) => {
+    const { fileId } = req.params
+
+    console.log('[WEBHOOK] 🔍 Consultando análise:', fileId)
+
+    const result = fileAnalysisResults.get(fileId)
+
+    if (!result) {
+        return res.status(404).json({
+            success: false,
+            error: 'Análise não encontrada para este arquivo'
+        })
+    }
+
+    res.json({
+        success: true,
+        data: result
+    })
+})
+
+/**
+ * GET /api/webhook/file-analysis
+ * List all stored analysis results
+ */
+app.get('/api/webhook/file-analysis', (req, res) => {
+    const results = Array.from(fileAnalysisResults.values())
+
+    console.log('[WEBHOOK] 📋 Listando todas as análises:', results.length)
+
+    res.json({
+        success: true,
+        count: results.length,
+        data: results
+    })
 })
 
 // ===== PTAX Exchange Rate Routes =====
